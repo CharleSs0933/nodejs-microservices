@@ -1,0 +1,24 @@
+{
+  "name": "nodejs-microservices",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CharleSs0933/nodejs-microservices.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CharleSs0933/nodejs-microservices/issues"
+  },
+  "homepage": "https://github.com/CharleSs0933/nodejs-microservices#readme",
+  "devDependencies": {
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
+  }
+}
