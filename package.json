@@ -8,7 +8,9 @@
     "apps/*",
     "packages/*"
   ],
-  "scripts": {},
+  "scripts": {
+    "dev:auth": "npm run dev -w auth-service"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/CharleSs0933/nodejs-microservices.git"
