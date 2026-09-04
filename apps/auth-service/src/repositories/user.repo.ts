@@ -14,6 +14,19 @@ export async function findByEmail(email: string): Promise<User | null> {
   return result.rows[0] ?? null;
 }
 
+export async function findById(id: string): Promise<User | null> {
+  const result = await getPool().query<User>(
+    `
+        SELECT id, name, email, password_hash, role, created_at
+        FROM users
+        WHERE id = $1
+        `,
+    [id],
+  );
+
+  return result.rows[0] ?? null;
+}
+
 export async function createUser(input: {
   name: string;
   email: string;
