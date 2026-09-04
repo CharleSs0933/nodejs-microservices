@@ -3,9 +3,16 @@ import { resolve } from "node:path";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import rateLimit, { MINUTE } from "express-rate-limit";
-import { AppError, httpLogger, logger, successResponse } from "shared";
+import rateLimit from "express-rate-limit";
+import {
+  AppError,
+  errorHandler,
+  httpLogger,
+  logger,
+  successResponse,
+} from "shared";
 import { createProxyMiddleware } from "http-proxy-middleware";
+import { gatewayAuth } from "./middleware/gatewayAuth";
 
 config({ path: resolve(process.cwd(), ".env") });
 config({ path: resolve(process.cwd(), "../../.env") });
@@ -40,6 +47,7 @@ app.use("/health", (_req, res) =>
 
 app.use(
   "/auth",
+  gatewayAuth,
   createProxyMiddleware({
     target: AUTH_SERVICE_URL,
     changeOrigin: true,
@@ -50,6 +58,8 @@ app.use(
 app.use((_req, _res, next) => {
   next(new AppError("Route not found", 404));
 });
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   logger.info(`API gateway running on port ${PORT}`);
