@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import * as authService from "../services/auth.service";
+import * as authService from "../services/auth.services";
 import { AppError, successResponse } from "shared";
 
 export async function register(
