@@ -33,3 +33,23 @@ export async function uploadAttachment(
     next(error);
   }
 }
+
+export async function listAttachments(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const { role, userId } = requireIdentity(req);
+    const taskId = String(req.params.taskId);
+    const attachments = await attachmentService.listAttachments(
+      taskId,
+      userId,
+      role,
+    );
+
+    successResponse(res, { attachments });
+  } catch (error) {
+    next(error);
+  }
+}
