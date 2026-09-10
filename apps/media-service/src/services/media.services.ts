@@ -2,6 +2,7 @@ import { AppError } from "shared";
 import * as attachmentRepo from "../repositories/media.repo";
 import { uploadBuffer } from "../utils/storage";
 import { convertToPublicMediaAttachment } from "../utils/media.utils";
+import { publishAttachmentEvent } from "../kafka";
 
 async function assertTashAccess(taskId: string, userId: string, role: string) {
   const task = await attachmentRepo.findTaskAccess(taskId);
@@ -38,6 +39,8 @@ export async function uploadAttachment(input: {
     publicId: uploaded.publicId,
     uploadedBy: input.userId,
   });
+
+  await publishAttachmentEvent(input.taskId, input.userId);
 
   return convertToPublicMediaAttachment(attachment);
 }

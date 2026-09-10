@@ -2,12 +2,16 @@ import { CreateTaskInput, UpdateTaskInput } from "../schemas/task.schemas";
 import * as taskRepo from "../repositories/task.repository";
 import { convertToPublishTask } from "../utils/task.utils";
 import { AppError } from "shared";
+import { publishTaskEvent } from "../kafka";
 
 export async function createTask(input: CreateTaskInput, userId: string) {
   const newlyCreatedTask = await taskRepo.createTask({
     title: input.title,
     createdBy: userId,
   });
+
+  // Publish one event here saying ok now we just created on task
+  await publishTaskEvent(newlyCreatedTask.id, userId);
 
   return convertToPublishTask(newlyCreatedTask);
 }

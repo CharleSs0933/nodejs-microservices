@@ -10,6 +10,7 @@ import {
   successResponse,
 } from "shared";
 import taskRoutes from "./routes/task.routes";
+import { initKafka } from "./kafka";
 
 config({
   path: resolve(process.cwd(), ".env"),
@@ -37,6 +38,16 @@ app.use((_req, res, next) => {
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  logger.info(`Task service is running on port ${PORT}`);
-});
+async function initStartUp() {
+  try {
+    await initKafka();
+  } catch (error) {
+    logger.error({ error }, "kafka producer init failed");
+  }
+
+  app.listen(PORT, () => {
+    logger.info(`Task service is running on port ${PORT}`);
+  });
+}
+
+initStartUp();

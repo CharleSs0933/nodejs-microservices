@@ -9,8 +9,8 @@ import {
   requireGatewaySecret,
   successResponse,
 } from "shared";
-import attachmentRoutes from "./routes/media.routes";
-import { initKafka } from "./kafka";
+import { startKafka } from "./services/workflow.services";
+import workflowRouter from "./routes/workflow.routes";
 
 config({
   path: resolve(process.cwd(), ".env"),
@@ -19,17 +19,18 @@ config({
   path: resolve(process.cwd(), "../../.env"),
 });
 
-const PORT = process.env.MEDIA_PORT || 3003;
+const PORT = process.env.WORKFLOW_PORT || 3004;
 
 const app = express();
 
 app.use(httpLogger);
+app.use(express.json());
 
 app.get("/health", (_req, res) => {
-  successResponse(res, { service: "media-service" });
+  successResponse(res, { service: "workflow-service" });
 });
 
-app.use("/tasks", requireGatewaySecret, attachmentRoutes);
+app.use(requireGatewaySecret, workflowRouter);
 
 app.use((_req, res, next) => {
   next(new AppError("Route not found", 404));
@@ -37,16 +38,16 @@ app.use((_req, res, next) => {
 
 app.use(errorHandler);
 
-async function initStartUp() {
+async function initStart() {
   try {
-    await initKafka();
+    await startKafka();
   } catch (error) {
-    logger.error({ error }, "kafka producer init failed");
+    logger.error({ error }, "Kafka consumer init failed");
   }
 
   app.listen(PORT, () => {
-    logger.info(`Media service is running on port ${PORT}`);
+    logger.info(`Workflow service is running on port ${PORT}`);
   });
 }
 
-initStartUp();
+initStart();
